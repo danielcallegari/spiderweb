@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>spiderweb - The Spider's Web</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>The Spider's Web</h1>
+            <p class="subtitle">Team Integration Assessment Tool</p>
+        </header>
+
+        <!-- Registration Page -->
+        <div id="registrationPage" class="page active">
+            <div class="registration-content">
+                <h3>Participant Registration</h3>
+                <p>Enter your name to participate in the team integration assessment:</p>
+                
+                <div class="input-section">
+                    <input type="text" id="nameInput" placeholder="Enter your name" maxlength="50">
+                    <div id="adminNotification" class="admin-notification hidden">
+                        <p><strong>🔑 You are the Administrator!</strong></p>
+                        <p>As the first user, you have been automatically assigned as the administrator of this session.</p>
+                    </div>
+                    <div id="adminOptions" class="admin-options hidden">
+                        <label>
+                            <input type="checkbox" id="adminOnlyCheckbox">
+                            Act as administrator only (do not participate in the assessment)
+                        </label>
+                    </div>
+                    <button id="registerBtn" onclick="registerParticipant()">Register</button>
+                </div>
+
+                <div class="participants-list">
+                    <h4>Registered Participants:</h4>
+                    <ul id="participantsList"></ul>
+                    <p id="noParticipants" class="empty-state">No participants registered yet.</p>
+                    <div id="waitingMessage" class="waiting-message hidden">
+                        <p>✅ You are registered! Waiting for the administrator to advance to the next stage...</p>
+                    </div>
+                </div>
+
+                <div id="adminControls" class="admin-controls hidden">
+                    <button id="clearAllBtn" onclick="resetAll()" class="danger-btn">Clear All</button>
+                    <button id="advanceBtn" onclick="advancePage()" class="primary-btn">Advance to Connections &gt</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Connections Page -->
+        <div id="connectionsPage" class="page">
+            <div class="connections-content">
+                <h3>Work Connections</h3>
+                <div id="currentUserInfo" class="current-user-info">
+                    <h4 id="currentUserName"></h4>
+                    <p id="connectionsInstruction">Mark below which participants you have effectively worked with:</p>
+                </div>
+
+                <div id="connectionsList" class="connections-list">
+                </div>
+
+                <div id="connectionsAdminControls" class="admin-controls hidden">
+                    <button onclick="advancePage()" class="primary-btn">Advance to Results &gt</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visualization Page -->
+        <div id="visualizationPage" class="page">
+            <div class="visualization-content">
+                <h3>The Spider's Web</h3>
+                <p class="subtitle">(c) Daniel Callegari, 2025</p>
+
+                <div class="visualization-tabs">
+                    <button class="tab-btn active" onclick="showTab('graph')">Graph</button>
+                    <button class="tab-btn" onclick="showTab('matrix')">Matrix</button>
+                    <button class="tab-btn" onclick="showTab('statistics')">Statistics</button>
+                </div>
+
+                <!-- Graph Tab -->
+                <div id="graphTab" class="tab-content active">
+                    <div id="graphContainer" class="graph-container">
+                        <svg id="spiderGraph" width="600" height="600"></svg>
+                    </div>
+                </div>
+
+                <!-- Matrix Tab -->
+                <div id="matrixTab" class="tab-content">
+                    <div class="matrix-container">
+                        <h4>Connection Matrix</h4>
+                        <div id="connectionMatrix"></div>
+                    </div>
+                </div>
+
+                <!-- Statistics Tab -->
+                <div id="statisticsTab" class="tab-content">
+                    <div class="statistics-container">
+                        <h4>Integration Statistics</h4>
+                        <div id="statisticsContent"></div>
+                    </div>
+                </div>
+
+                <div id="visualizationAdminControls" class="admin-controls hidden">
+                    <button onclick="backToConnections()" class="secondary-btn">&lt Back to Connections</button>
+                    <button onclick="resetAll()" class="danger-btn">Reset All</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; Daniel Callegari, 2025 - Version 0.1</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

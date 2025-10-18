@@ -1,0 +1,24 @@
+{
+  "name": "spiderweb",
+  "version": "0.1.0",
+  "description": "The Spider's Web - Team Integration Assessment Tool",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": ["team", "integration", "assessment", "websockets"],
+  "author": "Daniel Callegari",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
