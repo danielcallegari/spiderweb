@@ -132,4 +132,6 @@ The server maintains a centralized game state that includes:
 ## Versioning
 
 **Version 0.1** - Initial release, vibe-coded with Claude Sonnet 4 :)
+**Version 0.2** - Added support for multiple sessions
+
 

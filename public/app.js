@@ -1,6 +1,9 @@
 // WebSocket connection
 const socket = io();
 
+// Session state
+let currentSessionId = null;
+
 // Socket event handlers
 socket.on('resetComplete', () => {
     // After reset, reset local state
@@ -26,6 +29,7 @@ let appState = {
 
 // DOM elements
 const pages = {
+    sessionSelection: document.getElementById('sessionSelectionPage'),
     registration: document.getElementById('registrationPage'),
     connections: document.getElementById('connectionsPage'),
     visualization: document.getElementById('visualizationPage')
@@ -34,14 +38,7 @@ const pages = {
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
-    showPage('registration');
-    
-    // Initialize as not first user by default
-    isFirstUser = false;
-    updateAdminNotificationVisibility();
-    
-    // Focus on name input when page loads
-    document.getElementById('nameInput').focus();
+    initializeSession();
 });
 
 socket.on('connect', () => {
@@ -51,13 +48,53 @@ socket.on('connect', () => {
     isRegistered = false;
     isAdmin = false;
     console.log('Reset states on connect - isFirstUser:', isFirstUser);
+    
+    // If we have a session ID, rejoin the session
+    if (currentSessionId) {
+        socket.emit('joinSession', { sessionId: currentSessionId });
+    }
+});
+
+// Session management events
+socket.on('sessionCreated', ({ sessionId }) => {
+    console.log('Session created:', sessionId);
+    currentSessionId = sessionId;
+    updateSessionDisplay();
+    
+    // Join the newly created session
+    socket.emit('joinSession', { sessionId });
+});
+
+socket.on('sessionJoined', ({ sessionId }) => {
+    console.log('Joined session:', sessionId);
+    currentSessionId = sessionId;
+    updateSessionDisplay();
+    
+    // Update URL with session ID
+    const url = new URL(window.location);
+    url.searchParams.set('session', sessionId);
+    window.history.pushState({}, '', url);
+    
+    // Show registration page
+    showPage('registration');
+    
+    // Focus on name input
+    setTimeout(() => {
+        const nameInput = document.getElementById('nameInput');
+        if (nameInput) nameInput.focus();
+    }, 100);
+});
+
+socket.on('sessionError', (message) => {
+    alert(message);
+    showPage('sessionSelection');
 });
 
 // Socket event listeners
 socket.on('appState', (state) => {
     appState = state;
     
-    // Determine first user status based on game state
+    // Determine first user status based on app state
     // Only show admin UI if no admin exists AND no participants exist
     const shouldBeFirstUser = !state.adminId && state.participants.length === 0;
     
@@ -68,7 +105,7 @@ socket.on('appState', (state) => {
         currentIsFirstUser: isFirstUser
     });
     
-    // Update first user status based on game state
+    // Update first user status based on app state
     if (shouldBeFirstUser !== isFirstUser) {
         isFirstUser = shouldBeFirstUser;
         console.log('Updated isFirstUser to:', isFirstUser);
@@ -133,6 +170,84 @@ function setupEventListeners() {
             updateAdminNotificationVisibility();
         }
     });
+    
+    // Session code input
+    document.getElementById('sessionCodeInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            joinSessionByCode();
+        }
+    });
+}
+
+// Session management functions
+function initializeSession() {
+    // Check if there's a session ID in the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('session');
+    
+    if (sessionId) {
+        // Try to join the session from URL
+        currentSessionId = sessionId;
+        socket.emit('joinSession', { sessionId });
+    } else {
+        // Show session selection page
+        showPage('sessionSelection');
+    }
+}
+
+function createSession() {
+    socket.emit('createSession');
+}
+
+function joinSessionByCode() {
+    const input = document.getElementById('sessionCodeInput');
+    const sessionId = input.value.trim().toUpperCase();
+    
+    if (!sessionId) {
+        alert('Please enter a session code.');
+        return;
+    }
+    
+    if (sessionId.length !== 6) {
+        alert('Session code must be 6 characters long.');
+        return;
+    }
+    
+    currentSessionId = sessionId;
+    socket.emit('joinSession', { sessionId });
+}
+
+function updateSessionDisplay() {
+    const sessionInfo = document.getElementById('sessionInfo');
+    const sessionCodeEl = document.getElementById('sessionCode');
+    
+    if (currentSessionId) {
+        sessionCodeEl.textContent = currentSessionId;
+        sessionInfo.classList.remove('hidden');
+    } else {
+        sessionInfo.classList.add('hidden');
+    }
+}
+
+function copySessionCode() {
+    if (!currentSessionId) return;
+    
+    // Create full URL with session ID
+    const url = new URL(window.location.origin);
+    url.searchParams.set('session', currentSessionId);
+    
+    // Copy to clipboard
+    navigator.clipboard.writeText(url.toString()).then(() => {
+        const btn = document.getElementById('copySessionBtn');
+        const originalText = btn.textContent;
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => {
+            btn.textContent = originalText;
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy:', err);
+        alert('Failed to copy link. Session code: ' + currentSessionId);
+    });
 }
 
 // Registration functions
@@ -149,13 +264,18 @@ function registerParticipant() {
         alert('You have already registered. Please wait for the admin to advance.');
         return;
     }
+    
+    if (!currentSessionId) {
+        alert('No active session. Please join or create a session first.');
+        return;
+    }
 
     // Immediately hide input elements when register button is clicked
     hideRegistrationForm();
 
     const isAdminOnly = document.getElementById('adminOnlyCheckbox').checked;
     
-    socket.emit('registerParticipant', { name, isAdminOnly });
+    socket.emit('registerParticipant', { sessionId: currentSessionId, name, isAdminOnly });
     
     // Store current user info
     currentUser = { name, id: socket.id };
@@ -184,19 +304,26 @@ function advancePage() {
         return;
     }
     
-    socket.emit('advancePage');
+    if (!currentSessionId) return;
+    
+    socket.emit('advancePage', { sessionId: currentSessionId });
 }
 
 function backToConnections() {
     if (!isAdmin) return;
-    socket.emit('backToConnections');
+    
+    if (!currentSessionId) return;
+    
+    socket.emit('backToConnections', { sessionId: currentSessionId });
 }
 
 function resetAll() {
     if (!isAdmin) return;
     
     if (confirm('Are you sure you want to clear all data and restart the application?')) {
-        socket.emit('resetAll');
+        if (!currentSessionId) return;
+        
+        socket.emit('resetAll', { sessionId: currentSessionId });
         currentUser = null;
         isAdmin = false;
         isRegistered = false;
@@ -387,16 +514,20 @@ function updateConnectionsPage() {
 
 function toggleConnection(targetParticipantId) {
     if (!currentUser) return;
+    if (!currentSessionId) return;
+    
     console.log('toggleConnection called:', {
         currentUserId: currentUser.id,
         targetParticipantId: targetParticipantId
     });
-    socket.emit('toggleConnection', { targetParticipantId });
+    socket.emit('toggleConnection', { sessionId: currentSessionId, targetParticipantId });
 }
 
 function toggleConnection(targetParticipantId) {
     if (!currentUser) return;
-    socket.emit('toggleConnection', { targetParticipantId });
+    if (!currentSessionId) return;
+    
+    socket.emit('toggleConnection', { sessionId: currentSessionId, targetParticipantId });
 }
 
 function updateConnectionsUI() {

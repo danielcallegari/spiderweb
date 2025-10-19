@@ -12,10 +12,43 @@
         <header>
             <h1>The Spider's Web</h1>
             <p class="subtitle">Team Integration Assessment Tool</p>
+            <div id="sessionInfo" class="session-info hidden">
+                <span>Session Code: <strong id="sessionCode"></strong></span>
+                <button id="copySessionBtn" onclick="copySessionCode()" class="copy-btn" title="Copy session link">Copy Link</button>
+            </div>
         </header>
 
+        <!-- Session Selection Page -->
+        <div id="sessionSelectionPage" class="page active">
+            <div class="session-selection-content">
+                <h3>Session Management</h3>
+                <p>Create a new team assessment session or join an existing one:</p>
+                
+                <div class="session-options">
+                    <div class="session-option">
+                        <h4>Create New Session</h4>
+                        <p>Start a new team integration assessment and invite your team members.</p>
+                        <button onclick="createSession()" class="primary-btn">Create New Session</button>
+                    </div>
+                    
+                    <div class="session-divider">
+                        <span>OR</span>
+                    </div>
+                    
+                    <div class="session-option">
+                        <h4>Join Existing Session</h4>
+                        <p>Enter the session code shared by your team administrator.</p>
+                        <div class="join-session-input">
+                            <input type="text" id="sessionCodeInput" placeholder="Enter session code (e.g., ABC123)" maxlength="6">
+                            <button onclick="joinSessionByCode()" class="primary-btn">Join Session</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Registration Page -->
-        <div id="registrationPage" class="page active">
+        <div id="registrationPage" class="page"
             <div class="registration-content">
                 <h3>Participant Registration</h3>
                 <p>Enter your name to participate in the team integration assessment:</p>
@@ -113,7 +146,7 @@
     </div>
 
     <footer>
-        <p>&copy; Daniel Callegari, 2025 - Version 0.1</p>
+        <p>&copy; Daniel Callegari, 2025 - Version 0.2</p>
     </footer>
 
     <script src="app.js"></script>

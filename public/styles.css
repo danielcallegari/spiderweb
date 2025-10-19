@@ -17,7 +17,6 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
-    min-height: calc(100vh - 60px);
 }
 
 /* Header */
@@ -47,6 +46,46 @@ header .subtitle {
     font-style: italic;
 }
 
+/* Session Info */
+.session-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+}
+
+.session-info span {
+    font-size: 0.9rem;
+}
+
+.session-info strong {
+    font-family: 'Courier New', monospace;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+}
+
+.copy-btn {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    background: rgba(255, 255, 255, 0.9);
+    color: #4a5568;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.copy-btn:hover {
+    background: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
 /* Page System */
 .page {
     display: none;
@@ -55,6 +94,7 @@ header .subtitle {
     padding: 40px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     animation: fadeIn 0.5s ease-in;
+    margin: 0 20px 20px 20px;
 }
 
 .page.active {
@@ -64,6 +104,88 @@ header .subtitle {
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+/* Session Selection Page */
+.session-selection-content h3 {
+    color: #4a5568;
+    margin-bottom: 15px;
+    font-size: 1.8rem;
+    text-align: center;
+}
+
+.session-selection-content > p {
+    text-align: center;
+    color: #718096;
+    margin-bottom: 40px;
+}
+
+.session-options {
+    display: flex;
+    gap: 30px;
+    align-items: stretch;
+    flex-wrap: wrap;
+}
+
+.session-option {
+    flex: 1;
+    min-width: 280px;
+    padding: 30px;
+    background: #f7fafc;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.session-option:hover {
+    border-color: #667eea;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+}
+
+.session-option h4 {
+    color: #2d3748;
+    margin-bottom: 10px;
+    font-size: 1.3rem;
+}
+
+.session-option p {
+    color: #718096;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+.session-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #a0aec0;
+    font-weight: bold;
+    min-width: 40px;
+}
+
+.join-session-input {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.join-session-input input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-family: 'Courier New', monospace;
+    text-align: center;
+    transition: border-color 0.3s ease;
+}
+
+.join-session-input input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 /* Registration Page */
