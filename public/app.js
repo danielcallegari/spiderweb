@@ -446,10 +446,48 @@ function updateAdminControls() {
         controls.classList.remove('hidden');
         connectionsControls.classList.remove('hidden');
         visualizationControls.classList.remove('hidden');
+        
+        // Generate QR code if we have a session and it's the registration page
+        if (currentSessionId && appState.currentPage === 'registration') {
+            generateQRCode();
+        }
     } else {
         controls.classList.add('hidden');
         connectionsControls.classList.add('hidden');
         visualizationControls.classList.add('hidden');
+    }
+}
+
+// QR Code generation
+let qrCodeInstance = null;
+
+function generateQRCode() {
+    if (!currentSessionId) return;
+    
+    const qrcodeContainer = document.getElementById('qrcodeContainer');
+    const qrcodeElement = document.getElementById('qrcode');
+    
+    // Show the QR code container
+    qrcodeContainer.classList.remove('hidden');
+    
+    // Clear existing QR code
+    qrcodeElement.innerHTML = '';
+    
+    // Generate session URL
+    const sessionUrl = `${window.location.origin}${window.location.pathname}?session=${currentSessionId}`;
+    
+    // Create new QR code
+    try {
+        qrCodeInstance = new QRCode(qrcodeElement, {
+            text: sessionUrl,
+            width: 200,
+            height: 200,
+            colorDark: "#2d3748",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    } catch (error) {
+        console.error('Error generating QR code:', error);
     }
 }
 
