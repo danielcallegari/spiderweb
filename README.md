@@ -113,7 +113,7 @@ The application will be available at `http://localhost:3000`
 
 ## Application State Management
 
-The server maintains a centralized game state that includes:
+The server maintains a centralized app state that includes:
 - List of registered participants with their socket IDs and admin status
 - Bidirectional connection mappings between all participants
 - Current page state (registration, connections, or visualization)
@@ -132,6 +132,7 @@ The server maintains a centralized game state that includes:
 ## Versioning
 
 **Version 0.1** - Initial release, vibe-coded with Claude Sonnet 4 :)
+
 **Version 0.2** - Added support for multiple sessions
 
 
