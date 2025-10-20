@@ -6,6 +6,7 @@
     <title>spiderweb - The Spider's Web</title>
     <link rel="stylesheet" href="styles.css">
     <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -77,6 +78,11 @@
                     </div>
                 </div>
 
+                <div id="qrcodeContainer" class="qrcode-container hidden">
+                    <h4>📱 Scan to Join Session</h4>
+                    <div id="qrcode"></div>
+                    <p class="qrcode-hint">Participants can scan this QR code to join automatically</p>
+                </div>
                 <div id="adminControls" class="admin-controls hidden">
                     <button id="clearAllBtn" onclick="resetAll()" class="danger-btn">Clear All</button>
                     <button id="advanceBtn" onclick="advancePage()" class="primary-btn">Advance to Connections &gt</button>
